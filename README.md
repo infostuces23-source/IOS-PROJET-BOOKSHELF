@@ -1,159 +1,69 @@
-# Swift App Template
+# BookShelf : Ma Bibliothèque Personnelle 📚✨
 
-A starter template for iOS development students to build and run a Swift-backed web app — entirely in **GitHub Codespaces**, no Xcode or macOS required.
+Bienvenue sur **BookShelf**, une application web CRUD élégante et performante développée en Swift pour gérer une bibliothèque personnelle. Ce projet a été réalisé dans le cadre du cours de développement iOS (2026) à l'Université Paris 8.
 
-The included demo is a simple **Task List** app: a web server written in Swift that persists data with SQLite and renders an interactive UI in the browser.
+## 🎯 Objectif du projet :
 
----
+L'objectif de BookShelf est de fournir une interface simple, fluide et visuellement attrayante pour gérer sa collection de livres. L'application permet de garder une trace des ouvrages lus, en cours de lecture ou à lire, tout en les classant par catégories et en leur attribuant une note.
 
-## 1. Using This Template
+## ✨ Fonctionnalités principales :
 
-1. Click the **"Use this template"** button at the top of this repository.
-2. Give your new repository a name and click **"Create repository"**.
+BookShelf implémente toutes les opérations CRUD standard (Create, Read, Update, Delete) et va plus loin avec plusieurs fonctionnalités avancées :
 
-> Do **not** clone this repo directly — always start from your own copy created via the template.
+- **Gestion complète des livres** : Ajout, modification et suppression d'ouvrages avec des informations détaillées (titre, auteur, année, note, statut, couverture).
+- **Système de catégories** : Classification des livres par genres (Roman, Science-Fiction, Fantaisie, ...) avec une page dédiée pour explorer les livres d'une catégorie spécifique.
+- **Recherche intelligente** : Barre de recherche flexible (insensible à la casse, recherche partielle) permettant de trouver rapidement un livre par son titre ou son auteur.
+- **Tri dynamique** : Organisation de la bibliothèque par titre, auteur, année, note ou statut (croissant ou décroissant).
+- **Fiche détaillée** : Une page dédiée pour chaque livre affichant toutes ses informations et notes personnelles de manière élégante.
+- **Validation des données** : Vérification des formulaires côté serveur avec messages d'erreur clairs pour guider l'utilisateur.
+- **Interface (UI/UX)** : Design moderne, mode sombre ou clair, animations fluides et design adaptatif et responsive.
 
----
+## 🛠️ Technologies utilisées :
 
-## 2. Opening in GitHub Codespaces
+L'application est construite entièrement en Swift sans framework frontend lourd :
 
-1. In **your new repository**, click the green **"Code"** button.
-2. Select the **"Codespaces"** tab and click **"Create codespace on main"**.
-3. Wait for the container to build — this pulls the Swift 6.2 Docker image and runs `swift package resolve` automatically. This takes a few minutes the first time.
+- **Langage** : Swift 6.2
+- **Framework Web** : Hummingbird 2 
+- **Base de données** : SQLite 
+- **Frontend** : HTML5, CSS3, JavaScript vanilla 
+- **Environnement** : GitHub Codespaces
 
-Once the container is ready, VS Code opens in the browser with Swift fully configured.
+## 📂 Structure du code :
 
----
+Le projet respecte une architecture claire et modulaire :
 
-## 3. Build & Run
+- Models.swift : Définition des structures de données (Book, Category, ValidationError) conformes aux protocoles Codable et Sendable.
+- Database.swift : Couche d'accès aux données gérant toutes les requêtes SQLite typées (CRUD pour les livres et les catégories).
+- Views.swift : Génération dynamique du HTML côté serveur incluant les composants UI, les formulaires et le design global.
+- main.swift : Point d'entrée de l'application, configuration du serveur Hummingbird et définition de toutes les routes HTTP.
 
-Open the integrated terminal and run:
+## 🚀 Instructions d'installation et d'exécution :
 
-```bash
-./build.sh
-```
+Ce projet est conçu pour s'exécuter directement dans l'environnement GitHub Codespaces fourni avec le cours.
 
-This resolves dependencies and compiles the project. When it finishes, start the server:
+1. Ouvrir le projet dans GitHub Codespaces.
+2. Dans le terminal, exécuter le script de compilation : ./build.sh
+3. Lancez le serveur web : ./run.sh
+4. Codespaces proposera d'ouvrir l'application dans le navigateur dans le port 8080) Cliquer sur le lien pour accéder à BookShelf !
 
-```bash
-./run.sh
-```
+## 🗺️ Architecture des routes (API) :
 
-Codespaces will detect that port **8080** is now in use and show a pop-up — click **"Open in Browser"** (or find it under the **Ports** tab). You should see the Task List app running live.
+L'application expose les routes suivantes :
 
-> To stop the server press `Ctrl + C` in the terminal.
+| Méthode | Route | Description |
+|:---|:---|:---|
+| `GET` | `/` | Page d'accueil (liste des livres, recherche, tri, statistiques) |
+| `GET` | `/add` | Formulaire d'ajout d'un nouveau livre |
+| `GET` | `/book/:id` | Fiche détaillée d'un livre (lecture seule) |
+| `GET` | `/edit/:id` | Formulaire de modification d'un livre existant |
+| `GET` | `/categories` | Liste de toutes les catégories |
+| `GET` | `/categories/:id` | Liste des livres appartenant à une catégorie spécifique |
+| `POST` | `/create` | Traitement de l'ajout d'un livre |
+| `POST` | `/update/:id` | Traitement de la modification d'un livre |
+| `POST` | `/delete/:id` | Suppression d'un livre |
+| `POST` | `/toggle-status/:id` | Action rapide pour changer le statut (Lu/Non lu/En cours) |
+| `POST` | `/categories/create` | Ajout d'une nouvelle catégorie |
+| `POST` | `/categories/delete/:id` | Suppression d'une catégorie |
 
----
-
-## 4. Project Structure
-
-```
-.devcontainer/
-  devcontainer.json     # Codespaces container config (Swift 6.2, VS Code extensions, port forwarding)
-Sources/App/
-  main.swift            # Entry point — server setup and HTTP route definitions
-  Models.swift          # Data model: the TaskItem struct
-  Database.swift        # SQLite setup and all database queries
-  Views.swift           # HTML page rendering (returns pages to the browser)
-Package.swift           # Swift package definition — dependencies and build targets
-build.sh                # Helper script: resolve + compile
-run.sh                  # Helper script: start the server
-```
-
----
-
-## 5. How It Works
-
-```
-Browser  →  HTTP Request
-             ↓
-         main.swift  (Hummingbird router matches the route)
-             ↓
-         Database.swift  (SQLite.swift reads/writes db.sqlite3)
-             ↓
-         Views.swift  (builds an HTML string from the data)
-             ↓
-         HTTP Response  →  Browser renders the page
-```
-
-| Layer | File | Technology |
-|---|---|---|
-| Web server & routing | `main.swift` | [Hummingbird 2](https://github.com/hummingbird-project/hummingbird) |
-| Data model | `Models.swift` | Swift `struct` |
-| Database | `Database.swift` | [SQLite.swift](https://github.com/stephencelis/SQLite.swift) |
-| UI / HTML | `Views.swift` | [Pico CSS](https://picocss.com) |
-
----
-
-## 6. Your Assignment
-
-Your job is to extend this template into your own app. Here are the four files you will work in and what to change:
-
-### `Models.swift` — Define your data
-Replace or extend `TaskItem` with a struct that represents the data your app works with.
-```swift
-struct TaskItem: Codable, Sendable {
-    let id: Int64?
-    var title: String
-    var isCompleted: Bool
-    // Add your own fields here, e.g.:
-    // var dueDate: String
-    // var priority: Int
-}
-```
-
-### `Database.swift` — Read and write data
-Update the SQLite table columns to match your model, and add functions for any new queries your app needs (e.g. filtering, deleting, updating fields).
-
-### `Views.swift` — Change the UI
-Modify `renderIndex(items:)` to display your data the way you want. You can add new `render...()` functions for additional pages.
-
-### `main.swift` — Add routes
-Register new routes to handle new pages or actions. Follow the existing pattern:
-```swift
-router.get("/my-page") { _, _ -> HTML in
-    // fetch data, return a View
-}
-
-router.post("/my-action") { request, context -> Response in
-    // handle form submission
-}
-```
-
----
-
-## 7. Key Swift Concepts in This Project
-
-| Concept | Where to see it |
-|---|---|
-| `struct` | `Models.swift`, `Database.swift`, `Views.swift` |
-| `async/await` | `main.swift` — `app.runService()`, request handlers |
-| Closures | `main.swift` — route handler blocks `{ request, context in ... }` |
-| Protocol conformance | `Views.swift` — `HTML: ResponseGenerator` |
-| `throws` / `try` | `Database.swift` — all database calls |
-| Extensions | `Database.swift` — `Connection: @unchecked Sendable` |
-
----
-
-## 8. Troubleshooting
-
-**Port 8080 is already in use**
-Another process is using the port. In the terminal run:
-```bash
-lsof -i :8080
-kill <PID>
-```
-Then start the server again with `./run.sh`.
-
-**`error: 'App' product not found` or build errors on first open**
-The package dependencies may not have resolved yet. Run:
-```bash
-swift package resolve
-./build.sh
-```
-
-**Codespace is slow to start**
-The first build after creating a Codespace downloads the Swift Docker image (~1 GB). Subsequent starts are much faster because the image is cached.
-
-**Changes not showing in the browser**
-The server must be restarted to pick up code changes. Press `Ctrl + C`, run `./build.sh`, then `./run.sh` again.
+Et voilà !
+Ce Projet est réalisé par Lila MILOUDI, étudiante à l'Université Vincennes Saint Denis à Paris 8 :)
